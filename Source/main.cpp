@@ -10,7 +10,9 @@ int main(void)
 
     GameState game_state;
 
-    game_state.init(Vector2i(8, 8));
+    game_state.load_resources();
+
+    game_state.init(Vector2i(16, 16));
 
     double last_frame_time = 0;
     while (!WindowShouldClose())

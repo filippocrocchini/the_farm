@@ -2,6 +2,15 @@
 
 #include "game.h"
 
+#include <string>
+
+void GameState::draw_sprite(Sprite sprite, Vector2 position)
+{
+    Texture2D texture = textures[sprite.texture];
+    
+    DrawTexturePro(texture, (Rectangle) sprite.region, sprite.region + position, sprite.region.min + sprite.origin, 0, WHITE);
+}
+
 void GameState::render_frame()
 {
     BeginMode2D(camera);
@@ -19,6 +28,7 @@ void GameState::render_frame()
             }
 
             DrawRectangle(x * TILE_SIZE_PIXELS, y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, color);
+
         }
     }
 
@@ -38,18 +48,32 @@ void GameState::render_frame()
 
     DrawRectangleLines(hovered_tile.x * TILE_SIZE_PIXELS, hovered_tile.y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, YELLOW);
 
-    if (current_tool && tool_active)
+    Entity* current_entity = get_entity(current_entity_id);
+
+
+    if (current_entity)
     {
-        DrawRectangleLines(last_pressed_tile.x * TILE_SIZE_PIXELS, last_pressed_tile.y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, ORANGE);
+        const auto& info = entity_infos[current_entity->info];
+        const auto& tool = tools[info.tool];
+
+        if (tool->max_time && tool_active)
+        {
+            DrawRectangleLines(last_pressed_tile.x * TILE_SIZE_PIXELS, last_pressed_tile.y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, ORANGE);
         
-        Vector2 circle_center = last_pressed_tile * TILE_SIZE_PIXELS + Vector2i(TILE_SIZE_PIXELS, TILE_SIZE_PIXELS) / 2;
-        DrawCircleSector(circle_center, TILE_SIZE_PIXELS / 4, 0, (1 - tool_time / current_tool->max_time) * 360, 20, WHITE);
+            Vector2 circle_center = last_pressed_tile * TILE_SIZE_PIXELS + Vector2i(TILE_SIZE_PIXELS, TILE_SIZE_PIXELS) / 2;
+            DrawCircleSector(circle_center, TILE_SIZE_PIXELS / 4, 0, (1 - tool_time / tool->max_time) * 360, 20, WHITE);
+        }
     }
 
     for (const auto& e : entities)
     {
-        DrawText(e.tool->name, e.position.x * UNIT_TO_PIXELS, e.position.y * UNIT_TO_PIXELS, 12, BLUE);
+        const auto& info   = entity_infos[e.second.info];
+        const auto& sprite = sprites[info.sprite];
+
+        draw_sprite(sprite, e.second.position * UNIT_TO_PIXELS);
     }
 
     EndMode2D();
+    
+    DrawText(std::to_string(current_entity_id).c_str(), 10, 10, 24, RED);
 }

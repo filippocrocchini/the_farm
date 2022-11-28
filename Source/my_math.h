@@ -11,7 +11,7 @@ struct Vector2i {
     }
 
     constexpr inline Vector2i(int x, int y) : x{ x }, y{ y } {}
-    constexpr inline Vector2i(Vector2 v2) : x{ (int)v2.x }, y{ (int)v2.y } {}
+    constexpr inline explicit Vector2i(Vector2 v2) : x{ (int)v2.x }, y{ (int)v2.y } {}
 
     constexpr Vector2i()                           = default;
     constexpr Vector2i(const Vector2i&)            = default;
@@ -111,6 +111,104 @@ constexpr inline Vector2i operator*(int a, Vector2i b) { return b * a; }
 
 constexpr inline Vector2 operator/(float a, Vector2 b) { return b / a; }
 constexpr inline Vector2i operator/(int a, Vector2i b) { return b / a; }
+
+struct Rectangle2 {
+    Vector2 min = {};
+    Vector2 max = {};
+
+    constexpr inline operator Rectangle() {
+        return Rectangle{ min.x, min.y, (max.x - min.x), (max.y - min.y) };
+    }
+
+    constexpr inline Rectangle2(Vector2 min, Vector2 max) : min{ min }, max{ max } {}
+    constexpr inline explicit Rectangle2(Rectangle rect) : min{ rect.x, rect.y }, max{ rect.x + rect.width, rect.y + rect.height } {}
+
+    constexpr Rectangle2() = default;
+    constexpr Rectangle2(const Rectangle2&) = default;
+    constexpr Rectangle2(Rectangle2&&) = default;
+    constexpr Rectangle2& operator=(const Rectangle2&) = default;
+    constexpr Rectangle2& operator=(Rectangle2&&) = default;
+};
+
+struct Rectangle2i {
+    Vector2i min = {};
+    Vector2i max = {};
+
+    constexpr inline operator Rectangle2() {
+        return Rectangle2{ min, max };
+    }
+
+    constexpr inline operator Rectangle() {
+        return Rectangle{ (float) min.x, (float) min.y, (float)(max.x - min.x), (float)(max.y - min.y) };
+    }
+
+    constexpr inline Rectangle2i(Vector2i min, Vector2i max) : min{ min }, max{ max } {}
+    constexpr inline explicit Rectangle2i(Rectangle rect) : min{ rect.x, rect.y }, max{ rect.x + rect.width, rect.y + rect.height } {}
+
+    constexpr Rectangle2i() = default;
+    constexpr Rectangle2i(const Rectangle2i&) = default;
+    constexpr Rectangle2i(Rectangle2i&&) = default;
+    constexpr Rectangle2i& operator=(const Rectangle2i&) = default;
+    constexpr Rectangle2i& operator=(Rectangle2i&&) = default;
+
+    constexpr static Rectangle2i make_min_size(Vector2i min, Vector2i size)
+    {
+        return Rectangle2i{ min , min + size };
+    }
+};
+
+constexpr inline Rectangle2 operator+=(Rectangle2& a, Vector2 b)
+{
+    a.min += b;
+    a.max += b;
+    return a;
+}
+
+constexpr inline Rectangle2i operator+=(Rectangle2i& a, Vector2i b)
+{
+    a.min += b;
+    a.max += b;
+    return a;
+}
+
+constexpr inline Rectangle2 operator-=(Rectangle2& a, Vector2 b)
+{
+    a.min -= b;
+    a.max -= b;
+    return a;
+}
+
+constexpr inline Rectangle2i operator-=(Rectangle2i& a, Vector2i b)
+{
+    a.min -= b;
+    a.max -= b;
+    return a;
+}
+
+constexpr inline Rectangle2 operator*=(Rectangle2& a, float b)
+{
+    Vector2 half_delta = (a.max - a.min) * (b - 1) * 0.5f;
+    a.min -= half_delta;
+    a.max += half_delta;
+    return a;
+}
+
+constexpr inline Rectangle2 operator/=(Rectangle2& a, float b)
+{
+    Vector2 half_delta = (a.max - a.min) * ( 1.f / b - 1) * 0.5f;
+    a.min -= half_delta;
+    a.max += half_delta;
+    return a;
+}
+
+constexpr inline Rectangle2 operator+(Rectangle2 a, Vector2 b) { return a += b; }
+constexpr inline Rectangle2i operator+(Rectangle2i a, Vector2i b) { return a += b; }
+
+constexpr inline Rectangle2 operator-(Rectangle2 a, Vector2 b) { return a -= b; }
+constexpr inline Rectangle2i operator-(Rectangle2i a, Vector2i b) { return a -= b; }
+
+constexpr inline Rectangle2 operator*(Rectangle2 a, float b) { return a *= b; }
+constexpr inline Rectangle2 operator/(Rectangle2 a, float b) { return a /= b; }
 
 template<typename T>
 constexpr T lerp(T a, T b, float t)

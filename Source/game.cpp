@@ -1,6 +1,6 @@
 #include "game.h"
 
-void Harvest::action(GameState* game_state)
+bool Harvest::can_act(GameState* game_state)
 {
     TileEntity* hovered_entity = nullptr;
     TileEntity* last_pressed_entity = nullptr;
@@ -15,36 +15,69 @@ void Harvest::action(GameState* game_state)
             last_pressed_entity = &e;
         }
     }
+
+    return last_pressed_entity && last_pressed_entity->fully_grown;
+}
+
+void Harvest::action(GameState* game_state)
+{
+    TileEntity* last_pressed_entity = nullptr;
+
+    for (auto& e : game_state->tile_entities)
+    {
+        if (e.tile_position == game_state->last_pressed_tile) {
+            last_pressed_entity = &e;
+        }
+    }
     
     if (last_pressed_entity && last_pressed_entity->fully_grown)
     {
+        game_state->add_entity(Entity{ game_state->seed_info, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)game_state->level_size, 1 });
+        game_state->add_entity(Entity{ game_state->plant_info, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)game_state->level_size, 1 });
+        
         last_pressed_entity->dead = true;
-    }
 
-    if (game_state->last_pressed_tile.x >= 0 && game_state->last_pressed_tile.x < game_state->level_size.x &&
-        game_state->last_pressed_tile.y >= 0 && game_state->last_pressed_tile.y < game_state->level_size.y)
-    {
-        Tile& tile = game_state->tiles[game_state->last_pressed_tile.x + game_state->last_pressed_tile.y * game_state->level_size.x];
-        tile.plowed = false;
+        if (game_state->last_pressed_tile.x >= 0 && game_state->last_pressed_tile.x < game_state->level_size.x &&
+            game_state->last_pressed_tile.y >= 0 && game_state->last_pressed_tile.y < game_state->level_size.y)
+        {
+            Tile& tile = game_state->tiles[game_state->last_pressed_tile.x + game_state->last_pressed_tile.y * game_state->level_size.x];
+            tile.plowed = false;
+        }
     }
 }
 
-void Plant::action(GameState* game_state)
+bool Plant::can_act(GameState* game_state)
 {
     if (game_state->last_pressed_tile.x >= 0 && game_state->last_pressed_tile.x < game_state->level_size.x &&
         game_state->last_pressed_tile.y >= 0 && game_state->last_pressed_tile.y < game_state->level_size.y)
     {
         const Tile& tile = game_state->tiles[game_state->last_pressed_tile.x + game_state->last_pressed_tile.y * game_state->level_size.x];
 
-        if (tile.plowed)
-        {
-            TileEntity e = {};
-            e.tile_position = game_state->last_pressed_tile;
-            e.spawn_time    = game_state->time_from_start;
-
-            game_state->tile_entities.push_back(e);
-        }
+        return tile.plowed;
     }
+
+    return false;
+}
+
+void Plant::action(GameState* game_state)
+{
+    TileEntity e = {};
+    e.tile_position = game_state->last_pressed_tile;
+    e.spawn_time    = game_state->time_from_start;
+
+    game_state->tile_entities.push_back(e);
+}
+
+bool Plow::can_act(GameState* game_state)
+{
+    if (game_state->last_pressed_tile.x >= 0 && game_state->last_pressed_tile.x < game_state->level_size.x &&
+        game_state->last_pressed_tile.y >= 0 && game_state->last_pressed_tile.y < game_state->level_size.y)
+    {
+        Tile& tile = game_state->tiles[game_state->last_pressed_tile.x + game_state->last_pressed_tile.y * game_state->level_size.x];
+        return !tile.plowed;
+    }
+
+    return false;
 }
 
 void Plow::action(GameState* game_state)
@@ -68,16 +101,39 @@ void GameState::init(Vector2i size)
         tile.plowed = false;
     }
 
-    entities.push_back(ToolEntity{ &HARVEST_TOOL, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)level_size });
-    entities.push_back(ToolEntity{   &PLANT_TOOL, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)level_size });
-    entities.push_back(ToolEntity{    &PLOW_TOOL, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)level_size });
+    add_entity(Entity{ harvest_tool_info, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)level_size, INT_MAX });
+    add_entity(Entity{ plow_tool_info, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)level_size, INT_MAX });
+
+    add_entity(Entity{ seed_info, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)level_size, 1});
 }
 
+void GameState::add_entity(const Entity& e)
+{
+    last_id += 1;
+    auto entity = entities.insert({ last_id, e });
+    
+    entity.first->second.id = last_id; // This is nuts
+}
+
+void GameState::remove_entity(int id)
+{
+    entities.erase(id);
+}
+
+Entity* GameState::get_entity(int id)
+{
+    auto entity_itr = entities.find(id);
+    if (entity_itr != entities.end())
+    {
+        return &entity_itr->second;
+    }
+    return nullptr;
+}
 
 void GameState::update(float delta)
 {
 
-    render_size = Vector2(GetScreenWidth(), GetScreenHeight());
+    render_size = Vector2i(GetScreenWidth(), GetScreenHeight());
 
     camera.target   = level_size / 2 * TILE_SIZE_PIXELS;
     camera.offset   = Vector2{ render_size.x / 2.0f, render_size.y / 2.0f };
@@ -91,42 +147,20 @@ void GameState::update(float delta)
     hovered_tile.x = floor(mouse_pos.x / TILE_SIZE_UNITS);
     hovered_tile.y = floor(mouse_pos.y / TILE_SIZE_UNITS);
 
-    if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
-        if (current_tool_entity) {
-            current_tool_entity = nullptr;
-            current_tool = nullptr;
+        if (current_entity_id) {
+            current_entity_id = 0;
         }
         else {
             for (auto& e : entities)
             {
-                if (length(e.position - mouse_pos) < 0.5f)
+                if (length(e.second.position - mouse_pos) < 1.f)
                 {
-                    current_tool_entity = &e;
-                    current_tool = e.tool;
+                    current_entity_id = e.first;
                     break;
                 }
             }
-        }
-    }
-
-    if (current_tool_entity)
-    {
-        current_tool_entity->position = mouse_pos;
-    }
-
-    if (current_tool)
-    {
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-        {
-            last_pressed_tile = hovered_tile;
-            tool_time         = current_tool->max_time;
-            tool_active       = true;
-        }
-
-        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
-        {
-            tool_active = 0;
         }
     }
 
@@ -137,16 +171,48 @@ void GameState::update(float delta)
         if (age > 2) e.fully_grown = true;
     }
 
-    if (current_tool && tool_active)
+    Entity* current_entity = get_entity(current_entity_id);
+
+    if (current_entity)
     {
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+        current_entity->position = mouse_pos;
+
+        const auto& info = entity_infos[current_entity->info];
+        const auto& tool = tools[info.tool];
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
         {
-            tool_time = fc_max(tool_time - delta, 0.f);
-        
-            if (tool_time <= 0)
+            last_pressed_tile = hovered_tile;
+            tool_time         = tool->max_time;
+            tool_active       = true;
+        }
+
+        if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))
+        {
+            tool_active = 0;
+        }
+
+        if (tool_active)
+        {
+            if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
             {
-                current_tool->action(this);
-                tool_active = false;
+                tool_time = fc_max(tool_time - delta, 0.f);
+        
+                if (tool_time <= 0 && tool->can_act(this))
+                {
+                    tool->action(this);
+                    tool_active = false;
+                    
+                    if (current_entity->count != INT_MAX)
+                    {
+                        current_entity->count -= 1;
+                    }
+
+                    if (current_entity->count <= 0)
+                    {
+                        remove_entity(current_entity_id);
+                    }
+                }
             }
         }
     }

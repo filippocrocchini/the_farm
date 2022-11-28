@@ -165,6 +165,7 @@
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\my_math.cpp" />
     <ClCompile Include="Source\render.cpp" />
+    <ClCompile Include="Source\resources.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\game.h" />
