@@ -46,15 +46,14 @@ void GameState::render_frame()
         DrawRectangle(e.tile_position.x * TILE_SIZE_PIXELS, e.tile_position.y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, color);
     }
 
-    DrawRectangleLines(hovered_tile.x * TILE_SIZE_PIXELS, hovered_tile.y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, YELLOW);
-
     Entity* current_entity = get_entity(current_entity_id);
-
 
     if (current_entity)
     {
         const auto& info = entity_infos[current_entity->info];
         const auto& tool = tools[info.tool];
+        
+        DrawRectangleLines(hovered_tile.x * TILE_SIZE_PIXELS, hovered_tile.y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, YELLOW);
 
         if (tool->max_time && tool_active)
         {

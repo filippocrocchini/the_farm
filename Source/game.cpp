@@ -90,6 +90,17 @@ void Plow::action(GameState* game_state)
     }
 }
 
+
+bool GameState::collides_with(Entity* entity, Vector2 point)
+{
+    const auto& info   = entity_infos[entity->info];
+    const auto& sprite = sprites[info.sprite];
+
+    Rectangle2 entity_region = Rectangle2::make_min_size(entity->position, (Vector2)(sprite.region.max - sprite.region.min) / (float)UNIT_TO_PIXELS); 
+
+    return contains(entity_region, point);
+}
+
 void GameState::init(Vector2i size)
 {
     level_size = size;
@@ -154,7 +165,7 @@ void GameState::update(float delta)
         if (!current_entity_id) {
             for (auto& e : entities)
             {
-                if (length(e.second.position - mouse_pos) < 1.f)
+                if (collides_with(&e.second, mouse_pos))
                 {
                     current_entity_id = e.first;
                     just_picked_up = true;
@@ -218,6 +229,7 @@ void GameState::update(float delta)
                     if (current_entity->count <= 0)
                     {
                         remove_entity(current_entity_id);
+                        current_entity_id = 0;
                     }
                 }
             }

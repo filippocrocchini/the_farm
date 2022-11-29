@@ -99,7 +99,7 @@ struct Entity
    
     Vector2 position = {};
     int count = 1;
-    int id = 0;
+    entity_id id = 0;
 
     constexpr Entity(entity_info_id info, Vector2 position, int count) : info{ info }, position{ position }, count{ count } {}
     constexpr Entity() = default;
@@ -162,6 +162,8 @@ struct GameState
     void remove_entity(int id);
     
     Entity* get_entity(int id);
+
+    bool collides_with(Entity* entity, Vector2 point);
 
     //  ###############
     //  #    INPUT    #
