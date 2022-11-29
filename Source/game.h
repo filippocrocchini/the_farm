@@ -11,6 +11,8 @@ constexpr int TILE_SIZE_UNITS  = 1;
 constexpr int TILE_SIZE_PIXELS = TILE_SIZE_UNITS * UNIT_TO_PIXELS;
 
 typedef size_t entity_info_id;
+typedef size_t tile_entity_info_id;
+typedef size_t tile_info_id;
 typedef size_t tool_id;
 typedef size_t entity_id;
 typedef size_t texture_id;
@@ -74,13 +76,26 @@ struct Sprite
     constexpr Sprite& operator=(Sprite&&) = default;
 };
 
+struct TileInfo
+{
+    sprite_id sprite = 0;
+    bool   can_plant = false;
+};
+
 struct Tile
 {
-    bool plowed = false;
+    tile_info_id info = 0;
+};
+
+struct TileEntityInfo
+{
+    std::vector<sprite_id> sprites = {};
 };
 
 struct TileEntity
 {
+    tile_entity_info_id info = 0;
+
     Vector2i tile_position = {};
     bool       fully_grown = false;
     bool              dead = false;
@@ -89,8 +104,8 @@ struct TileEntity
 
 struct EntityInfo
 {
-    sprite_id sprite;
-    tool_id   tool;
+    sprite_id sprite = 0;
+    tool_id     tool = 0;
 };
 
 struct Entity
@@ -114,12 +129,16 @@ struct GameState
     //  ###################
     //  #    RESOURCES    #
     //  ###################
-    std::vector<EntityInfo> entity_infos;
-    std::vector<Texture2D>  textures;
-    std::vector<Sprite>     sprites;
-    std::vector<Tool*>      tools;
+    std::vector<TileEntityInfo> tile_entity_infos;
+    std::vector<EntityInfo>     entity_infos;
+    std::vector<Texture2D>      textures;
+    std::vector<TileInfo>       tile_infos;
+    std::vector<Sprite>         sprites;
+    std::vector<Tool*>          tools;
 
+    tile_entity_info_id register_tile_entity_info(TileEntityInfo info);
     entity_info_id register_entity_info(EntityInfo info);
+    tile_info_id register_tile_info(TileInfo info);
     texture_id register_texture(Texture2D texture);
     sprite_id register_sprite(Sprite sprite);
     tool_id register_tool(Tool* tool);
@@ -133,6 +152,15 @@ struct GameState
     sprite_id seed_sprite = 0;
     sprite_id plant_sprite = 0;
 
+    sprite_id wheat_sprite_0 = 0;
+    sprite_id wheat_sprite_1 = 0;
+    sprite_id wheat_sprite_2 = 0;
+    sprite_id wheat_sprite_3 = 0;
+    
+    sprite_id grass_sprite = 0;
+    sprite_id plowed_dirt_sprite = 0;
+    sprite_id dirt_sprite = 0;
+
     tool_id null_tool = 0;
     tool_id harvest_tool = 0;
     tool_id plant_tool = 0;
@@ -143,6 +171,14 @@ struct GameState
     entity_info_id plow_tool_info = 0;
     entity_info_id seed_info = 0;
     entity_info_id plant_info = 0;
+
+    tile_entity_info_id null_tile_entity_info = 0;
+    tile_entity_info_id            wheat_info = 0;
+
+    tile_info_id   null_tile_info = 0;
+    tile_info_id       grass_info = 0;
+    tile_info_id        dirt_info = 0;
+    tile_info_id plowed_dirt_info = 0;
 
     //  ###############
     //  #    TILES    #

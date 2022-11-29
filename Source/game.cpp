@@ -41,7 +41,7 @@ void Harvest::action(GameState* game_state)
             game_state->last_pressed_tile.y >= 0 && game_state->last_pressed_tile.y < game_state->level_size.y)
         {
             Tile& tile = game_state->tiles[game_state->last_pressed_tile.x + game_state->last_pressed_tile.y * game_state->level_size.x];
-            tile.plowed = false;
+            tile.info = game_state->dirt_info;
         }
     }
 }
@@ -51,9 +51,10 @@ bool Plant::can_act(GameState* game_state)
     if (game_state->last_pressed_tile.x >= 0 && game_state->last_pressed_tile.x < game_state->level_size.x &&
         game_state->last_pressed_tile.y >= 0 && game_state->last_pressed_tile.y < game_state->level_size.y)
     {
-        const Tile& tile = game_state->tiles[game_state->last_pressed_tile.x + game_state->last_pressed_tile.y * game_state->level_size.x];
+        const auto& tile = game_state->tiles[game_state->last_pressed_tile.x + game_state->last_pressed_tile.y * game_state->level_size.x];
+        const auto& info = game_state->tile_infos[tile.info];
 
-        return tile.plowed;
+        return info.can_plant;
     }
 
     return false;
@@ -64,6 +65,7 @@ void Plant::action(GameState* game_state)
     TileEntity e = {};
     e.tile_position = game_state->last_pressed_tile;
     e.spawn_time    = game_state->time_from_start;
+    e.info          = game_state->wheat_info;
 
     game_state->tile_entities.push_back(e);
 }
@@ -73,8 +75,10 @@ bool Plow::can_act(GameState* game_state)
     if (game_state->last_pressed_tile.x >= 0 && game_state->last_pressed_tile.x < game_state->level_size.x &&
         game_state->last_pressed_tile.y >= 0 && game_state->last_pressed_tile.y < game_state->level_size.y)
     {
-        Tile& tile = game_state->tiles[game_state->last_pressed_tile.x + game_state->last_pressed_tile.y * game_state->level_size.x];
-        return !tile.plowed;
+        const auto& tile = game_state->tiles[game_state->last_pressed_tile.x + game_state->last_pressed_tile.y * game_state->level_size.x];
+        const auto& info = game_state->tile_infos[tile.info];
+
+        return !info.can_plant;
     }
 
     return false;
@@ -86,7 +90,7 @@ void Plow::action(GameState* game_state)
         game_state->last_pressed_tile.y >= 0 && game_state->last_pressed_tile.y < game_state->level_size.y)
     {
         Tile& tile = game_state->tiles[game_state->last_pressed_tile.x + game_state->last_pressed_tile.y * game_state->level_size.x];
-        tile.plowed = true;
+        tile.info = game_state->plowed_dirt_info;
     }
 }
 
@@ -109,7 +113,7 @@ void GameState::init(Vector2i size)
 
     for (Tile& tile : tiles)
     {
-        tile.plowed = false;
+        tile.info = grass_info;
     }
 
     add_entity(Entity{ harvest_tool_info, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)level_size, INT_MAX });

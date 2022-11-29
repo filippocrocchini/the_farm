@@ -19,31 +19,28 @@ void GameState::render_frame()
     {
         for (int x = 0; x < level_size.x; x++)
         {
-            const Tile& tile = tiles[y * level_size.x + x];
-            
-            Color color = LIME;
-            if (tile.plowed)
-            {
-                color = BROWN;
-            }
+            const auto& tile   = tiles[y * level_size.x + x];
+            const auto& info   = tile_infos[tile.info];
+            const auto& sprite = sprites[info.sprite];
 
-            DrawRectangle(x * TILE_SIZE_PIXELS, y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, color);
-
+            // DrawRectangle(x * TILE_SIZE_PIXELS, y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, color);
+            draw_sprite(sprite, Vector2{ (float)x * TILE_SIZE_PIXELS, (float)y * TILE_SIZE_PIXELS });
         }
     }
 
     for (const auto& e : tile_entities)
     {
+        const auto& info = tile_entity_infos[e.info];
+
         float age        = time_from_start - e.spawn_time;
         float age_factor = clamp(age / 2.f, 0.f, 1.f);
 
-        Color color = color_mix(GREEN, YELLOW, age_factor);
+        size_t sprite_index = (int) (age_factor * (info.sprites.size() - 1));
 
-        if (e.fully_grown) {
-            color = RED;
-        }
+        const auto& sprite = sprites[info.sprites[sprite_index]];
 
-        DrawRectangle(e.tile_position.x * TILE_SIZE_PIXELS, e.tile_position.y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, color);
+        // DrawRectangle(x * TILE_SIZE_PIXELS, y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, color);
+        draw_sprite(sprite, e.tile_position * UNIT_TO_PIXELS);
     }
 
     Entity* current_entity = get_entity(current_entity_id);
