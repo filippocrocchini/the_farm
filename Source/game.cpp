@@ -149,10 +149,7 @@ void GameState::update(float delta)
 
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
-        if (current_entity_id) {
-            current_entity_id = 0;
-        }
-        else {
+        if (!current_entity_id) {
             for (auto& e : entities)
             {
                 if (length(e.second.position - mouse_pos) < 1.f)
@@ -161,6 +158,13 @@ void GameState::update(float delta)
                     break;
                 }
             }
+        }
+    }
+
+    if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+    {
+        if (current_entity_id) {
+            current_entity_id = 0;
         }
     }
 
@@ -180,21 +184,21 @@ void GameState::update(float delta)
         const auto& info = entity_infos[current_entity->info];
         const auto& tool = tools[info.tool];
 
-        if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
             last_pressed_tile = hovered_tile;
             tool_time         = tool->max_time;
             tool_active       = true;
         }
 
-        if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
         {
-            tool_active = 0;
+            tool_active = false;
         }
 
         if (tool_active)
         {
-            if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
             {
                 tool_time = fc_max(tool_time - delta, 0.f);
         
