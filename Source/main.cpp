@@ -3,7 +3,7 @@
 
 int main(void)
 {
-    Vector2 last_window_size = {800, 450};
+    Vector2 last_window_size = {1080, 720};
     InitWindow(last_window_size.x, last_window_size.y, "The Farm");
     SetWindowState(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
     SetExitKey(0);
