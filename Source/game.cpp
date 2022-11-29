@@ -147,6 +147,8 @@ void GameState::update(float delta)
     hovered_tile.x = floor(mouse_pos.x / TILE_SIZE_UNITS);
     hovered_tile.y = floor(mouse_pos.y / TILE_SIZE_UNITS);
 
+    bool just_picked_up = false;
+
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
         if (!current_entity_id) {
@@ -155,6 +157,7 @@ void GameState::update(float delta)
                 if (length(e.second.position - mouse_pos) < 1.f)
                 {
                     current_entity_id = e.first;
+                    just_picked_up = true;
                     break;
                 }
             }
@@ -184,7 +187,7 @@ void GameState::update(float delta)
         const auto& info = entity_infos[current_entity->info];
         const auto& tool = tools[info.tool];
 
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        if (!just_picked_up && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
             last_pressed_tile = hovered_tile;
             tool_time         = tool->max_time;
