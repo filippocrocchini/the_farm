@@ -4,11 +4,16 @@
 
 #include <string>
 
-void GameState::draw_sprite(Sprite sprite, Vector2 position)
+void GameState::draw_sprite(Sprite sprite, Vector2 position, bool flip_x, bool flip_y)
 {
     Texture2D texture = textures[sprite.texture];
     
-    DrawTexturePro(texture, (Rectangle) sprite.region, sprite.region + position, sprite.region.min + sprite.origin, 0, WHITE);
+    Rectangle source = (Rectangle) sprite.region;
+
+    if (flip_x) source.width = -source.width;
+    if (flip_y) source.height = -source.height;
+
+    DrawTexturePro(texture, source, sprite.region + position, sprite.region.min + sprite.origin, 0, WHITE);
 }
 
 void GameState::render_frame()
@@ -24,7 +29,7 @@ void GameState::render_frame()
             const auto& sprite = sprites[info.sprite];
 
             // DrawRectangle(x * TILE_SIZE_PIXELS, y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, color);
-            draw_sprite(sprite, Vector2{ (float)x * TILE_SIZE_PIXELS, (float)y * TILE_SIZE_PIXELS });
+            draw_sprite(sprite, Vector2{ (float)x * TILE_SIZE_PIXELS, (float)y * TILE_SIZE_PIXELS }, tile.random & 1, (tile.random >> 1) & 1);
         }
     }
 

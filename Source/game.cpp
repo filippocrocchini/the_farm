@@ -66,6 +66,8 @@ void Plant::action(GameState* game_state)
     e.tile_position = game_state->last_pressed_tile;
     e.spawn_time    = game_state->time_from_start;
     e.info          = game_state->wheat_info;
+    e.random        = (size_t)GetRandomValue(INT_MIN, INT_MAX) << 32 | GetRandomValue(INT_MIN, INT_MAX);
+
 
     game_state->tile_entities.push_back(e);
 }
@@ -113,7 +115,8 @@ void GameState::init(Vector2i size)
 
     for (Tile& tile : tiles)
     {
-        tile.info = grass_info;
+        tile.info   = grass_info;
+        tile.random = (size_t)GetRandomValue(INT_MIN, INT_MAX) << 32 | GetRandomValue(INT_MIN, INT_MAX);
     }
 
     add_entity(Entity{ harvest_tool_info, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)level_size, INT_MAX });

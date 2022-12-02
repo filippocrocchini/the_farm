@@ -52,19 +52,19 @@ void GameState::load_resources()
     
     null_sprite = register_sprite(Sprite{ null_texture, Rectangle2i::make_min_size(Vector2i{  0, 0 }, Vector2i{ 1, 1 }), Vector2{} });
 
-    harvest_sprite = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{  0, 0 }, Vector2i{ 16, 16 }), Vector2{} });
-    plow_sprite    = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 16, 0 }, Vector2i{ 16, 16 }), Vector2{} });
-    seed_sprite    = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 32, 0 }, Vector2i{ 16, 16 }), Vector2{} });
-    plant_sprite   = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 48, 0 }, Vector2i{ 16, 16 }), Vector2{} });
+    harvest_sprite = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{  0, 0 }, Vector2i{ 16, 16 }), Vector2{0, 0} });
+    plow_sprite    = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 16, 0 }, Vector2i{ 16, 16 }), Vector2{0, 0} });
+    seed_sprite    = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 32, 0 }, Vector2i{ 16, 16 }), Vector2{0, 0} });
+    plant_sprite   = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 48, 0 }, Vector2i{ 16, 16 }), Vector2{0, 0} });
     
-    wheat_sprite_0 = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{  0, 16 }, Vector2i{ 16, 16 }), Vector2{} });
-    wheat_sprite_1 = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 16, 16 }, Vector2i{ 16, 16 }), Vector2{} });
-    wheat_sprite_2 = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 32, 16 }, Vector2i{ 16, 16 }), Vector2{} });
-    wheat_sprite_3 = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 48, 16 }, Vector2i{ 16, 16 }), Vector2{} });
+    wheat_sprite_0 = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{  0, 32 }, Vector2i{ 16, 32 }), Vector2{0, 16} });
+    wheat_sprite_1 = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 16, 32 }, Vector2i{ 16, 32 }), Vector2{0, 16} });
+    wheat_sprite_2 = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 32, 32 }, Vector2i{ 16, 32 }), Vector2{0, 16} });
+    wheat_sprite_3 = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 48, 32 }, Vector2i{ 16, 32 }), Vector2{0, 16} });
 
-    grass_sprite       = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{  0, 32 }, Vector2i{ 16, 16 }), Vector2{} });
-    dirt_sprite        = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 16, 32 }, Vector2i{ 16, 16 }), Vector2{} });
-    plowed_dirt_sprite = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 32, 32 }, Vector2i{ 16, 16 }), Vector2{} });
+    grass_sprite       = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{  0, 16 }, Vector2i{ 16, 16 }), Vector2{0, 0} });
+    dirt_sprite        = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 16, 16 }, Vector2i{ 16, 16 }), Vector2{0, 0} });
+    plowed_dirt_sprite = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 32, 16 }, Vector2i{ 16, 16 }), Vector2{0, 0} });
 
     null_tool    = register_tool(&NULL_TOOL);
     harvest_tool = register_tool(&HARVEST_TOOL);

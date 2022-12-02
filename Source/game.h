@@ -85,6 +85,7 @@ struct TileInfo
 struct Tile
 {
     tile_info_id info = 0;
+    size_t     random = 0;
 };
 
 struct TileEntityInfo
@@ -96,6 +97,7 @@ struct TileEntity
 {
     tile_entity_info_id info = 0;
 
+    size_t          random = 0;
     Vector2i tile_position = {};
     bool       fully_grown = false;
     bool              dead = false;
@@ -215,7 +217,7 @@ struct GameState
     bool           tool_active = false;
     float            tool_time = 0;
 
-    void draw_sprite(Sprite sprite, Vector2 position);
+    void draw_sprite(Sprite sprite, Vector2 position, bool flip_x = false, bool flip_y = false);
 
     //  ##################
     //  #    MAIN API    #
