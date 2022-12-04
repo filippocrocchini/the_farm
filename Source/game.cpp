@@ -32,8 +32,15 @@ void Harvest::action(GameState* game_state)
     
     if (last_pressed_entity && last_pressed_entity->fully_grown)
     {
-        game_state->add_entity(Entity{ game_state->seed_info, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)game_state->level_size, 1 });
-        game_state->add_entity(Entity{ game_state->plant_info, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)game_state->level_size, 1 });
+        auto position = last_pressed_entity->tile_position;
+
+        game_state->add_entity(Entity{ game_state->plant_info, position + (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * 3, 1 });
+
+        int seed_count = GetRandomValue(1, 3);
+        for (int i = 0; i < seed_count; i++)
+        {
+            game_state->add_entity(Entity{ game_state->seed_info, position + (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * 3, 1 });
+        }
         
         last_pressed_entity->dead = true;
 
@@ -123,6 +130,8 @@ void GameState::init(Vector2i size)
     add_entity(Entity{ plow_tool_info, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)level_size, INT_MAX });
 
     add_entity(Entity{ seed_info, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)level_size, 1});
+
+    add_entity(Entity{ bin_info, (Vector2)Vector2i { rand(), rand() } / (float)RAND_MAX * (Vector2)level_size, 1});
 }
 
 void GameState::add_entity(const Entity& e)
@@ -156,7 +165,7 @@ void GameState::update(float delta)
     camera.target   = level_size / 2 * TILE_SIZE_PIXELS;
     camera.offset   = Vector2{ render_size.x / 2.0f, render_size.y / 2.0f };
     camera.rotation = 0.0f;
-    camera.zoom     = 2.0f;
+    camera.zoom     = PIXEL_SCALE;
 
     time_from_start += delta;
 

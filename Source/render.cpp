@@ -2,13 +2,18 @@
 
 #include "game.h"
 
-#include <string>
+// #include <string>
 
 void GameState::draw_sprite(Sprite sprite, Vector2 position, bool flip_x, bool flip_y)
 {
     Texture2D texture = textures[sprite.texture];
     
     Rectangle source = (Rectangle) sprite.region;
+
+    source.x      += 0.125f;
+    source.y      += 0.125f;
+    source.width  -= 0.25f;
+    source.height -= 0.25f;
 
     if (flip_x) source.width = -source.width;
     if (flip_y) source.height = -source.height;
@@ -28,7 +33,6 @@ void GameState::render_frame()
             const auto& info   = tile_infos[tile.info];
             const auto& sprite = sprites[info.sprite];
 
-            // DrawRectangle(x * TILE_SIZE_PIXELS, y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, color);
             draw_sprite(sprite, Vector2{ (float)x * TILE_SIZE_PIXELS, (float)y * TILE_SIZE_PIXELS }, tile.random & 1, (tile.random >> 1) & 1);
         }
     }
@@ -44,7 +48,6 @@ void GameState::render_frame()
 
         const auto& sprite = sprites[info.sprites[sprite_index]];
 
-        // DrawRectangle(x * TILE_SIZE_PIXELS, y * TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, color);
         draw_sprite(sprite, e.tile_position * UNIT_TO_PIXELS);
     }
 
@@ -76,5 +79,5 @@ void GameState::render_frame()
 
     EndMode2D();
     
-    DrawText(std::to_string(current_entity_id).c_str(), 10, 10, 24, RED);
+    // DrawText(std::to_string(current_entity_id).c_str(), 10, 10, 24, RED);
 }

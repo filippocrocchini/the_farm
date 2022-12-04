@@ -62,6 +62,8 @@ void GameState::load_resources()
     wheat_sprite_2 = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 32, 32 }, Vector2i{ 16, 32 }), Vector2{0, 16} });
     wheat_sprite_3 = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 48, 32 }, Vector2i{ 16, 32 }), Vector2{0, 16} });
 
+    bin_sprite = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 0, 64 }, Vector2i{ 16, 32 }), Vector2{ 0, 16 } });
+
     grass_sprite       = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{  0, 16 }, Vector2i{ 16, 16 }), Vector2{0, 0} });
     dirt_sprite        = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 16, 16 }, Vector2i{ 16, 16 }), Vector2{0, 0} });
     plowed_dirt_sprite = register_sprite(Sprite{ main_atlas, Rectangle2i::make_min_size(Vector2i{ 32, 16 }, Vector2i{ 16, 16 }), Vector2{0, 0} });
@@ -75,7 +77,9 @@ void GameState::load_resources()
     harvest_tool_info = register_entity_info(EntityInfo{ harvest_sprite, harvest_tool });
     plow_tool_info    = register_entity_info(EntityInfo{ plow_sprite, plow_tool });
     seed_info         = register_entity_info(EntityInfo{ seed_sprite, plant_tool });
-    plant_info        = register_entity_info(EntityInfo{ plant_sprite , 0 });
+    plant_info        = register_entity_info(EntityInfo{ plant_sprite, 0 });
+
+    bin_info          = register_entity_info(EntityInfo{ bin_sprite, 0 });
 
     null_tile_entity_info = register_tile_entity_info(TileEntityInfo{ { null_sprite } });
     wheat_info            = register_tile_entity_info(TileEntityInfo{ { wheat_sprite_0, wheat_sprite_1, wheat_sprite_2, wheat_sprite_3 } });

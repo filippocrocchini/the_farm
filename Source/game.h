@@ -9,6 +9,7 @@ constexpr int UNIT_TO_PIXELS = 16;
 
 constexpr int TILE_SIZE_UNITS  = 1;
 constexpr int TILE_SIZE_PIXELS = TILE_SIZE_UNITS * UNIT_TO_PIXELS;
+constexpr int PIXEL_SCALE      = 3;
 
 typedef size_t entity_info_id;
 typedef size_t tile_entity_info_id;
@@ -115,8 +116,8 @@ struct Entity
     entity_info_id info = 0;
    
     Vector2 position = {};
-    int count = 1;
-    entity_id id = 0;
+    int        count = 1;
+    entity_id     id = 0;
 
     constexpr Entity(entity_info_id info, Vector2 position, int count) : info{ info }, position{ position }, count{ count } {}
     constexpr Entity() = default;
@@ -139,40 +140,43 @@ struct GameState
     std::vector<Tool*>          tools;
 
     tile_entity_info_id register_tile_entity_info(TileEntityInfo info);
-    entity_info_id register_entity_info(EntityInfo info);
-    tile_info_id register_tile_info(TileInfo info);
-    texture_id register_texture(Texture2D texture);
-    sprite_id register_sprite(Sprite sprite);
-    tool_id register_tool(Tool* tool);
+    entity_info_id      register_entity_info(EntityInfo info);
+    tile_info_id        register_tile_info(TileInfo info);
+    texture_id          register_texture(Texture2D texture);
+    sprite_id           register_sprite(Sprite sprite);
+    tool_id             register_tool(Tool* tool);
 
     texture_id null_texture = 0;
-    texture_id main_atlas   = 0;
+    texture_id   main_atlas = 0;
 
-    sprite_id null_sprite = 0;
+    sprite_id    null_sprite = 0;
     sprite_id harvest_sprite = 0;
-    sprite_id plow_sprite = 0;
-    sprite_id seed_sprite = 0;
-    sprite_id plant_sprite = 0;
+    sprite_id    plow_sprite = 0;
+    sprite_id    seed_sprite = 0;
+    sprite_id   plant_sprite = 0;
 
     sprite_id wheat_sprite_0 = 0;
     sprite_id wheat_sprite_1 = 0;
     sprite_id wheat_sprite_2 = 0;
     sprite_id wheat_sprite_3 = 0;
+
+    sprite_id bin_sprite = 0;
     
-    sprite_id grass_sprite = 0;
+    sprite_id       grass_sprite = 0;
     sprite_id plowed_dirt_sprite = 0;
-    sprite_id dirt_sprite = 0;
+    sprite_id        dirt_sprite = 0;
 
-    tool_id null_tool = 0;
+    tool_id    null_tool = 0;
     tool_id harvest_tool = 0;
-    tool_id plant_tool = 0;
-    tool_id plow_tool = 0;
+    tool_id   plant_tool = 0;
+    tool_id    plow_tool = 0;
 
-    entity_info_id null_entity_info = 0;
+    entity_info_id  null_entity_info = 0;
     entity_info_id harvest_tool_info = 0;
-    entity_info_id plow_tool_info = 0;
-    entity_info_id seed_info = 0;
-    entity_info_id plant_info = 0;
+    entity_info_id    plow_tool_info = 0;
+    entity_info_id         seed_info = 0;
+    entity_info_id        plant_info = 0;
+    entity_info_id          bin_info = 0;
 
     tile_entity_info_id null_tile_entity_info = 0;
     tile_entity_info_id            wheat_info = 0;
@@ -191,7 +195,7 @@ struct GameState
     //  ##################
     //  #    ENTITIES    #
     //  ##################
-    std::vector<TileEntity> tile_entities = {};
+    std::vector<TileEntity>          tile_entities = {};
     std::unordered_map<entity_id, Entity> entities = {};
 
     entity_id last_id = 0;
